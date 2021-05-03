@@ -1,0 +1,9 @@
+name: Duel-Manger
+version: 1.0
+main: fr.groupecraft.duel.DuelMain
+author: groupecraft
+depend:
+  - Vault
+commands:
+  duel:
+  arena:
