@@ -46,6 +46,7 @@ public class FonctionsDuel {
 			temp2=main.arenas.get(i);
 			if(temp2.hasDuel()) {
 				temp=temp2.getDuel();
+				if(temp==null)continue;
 				if(temp.hasPlayer(player)) return temp;
 			}
 			

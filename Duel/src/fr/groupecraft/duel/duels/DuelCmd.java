@@ -43,15 +43,17 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 			try{
 				mise=Integer.parseInt(args[1]);
 			}catch(Exception e) {
-				sender.sendMessage(getDuelHelpMessage()+"m");
+				sender.sendMessage(getDuelHelpMessage());
 				return false;
 			}//termine la command esi la mise n'est pas rentré
 			if(mise<=0) {
 				sender.sendMessage("la mise sur un duel doit être supérieur à 0");
 				return false;
 			}//termine la commande si la mise est négative
-			
-			//termine la commande si le jeur n'as pas assez d'argent pour lancer le duel
+			if(+main.economy.getBalance(player)<=mise) {
+					player.sendMessage("vous n'avez pas assez d'argent pour lancer ce duel "+main.economy.getBalance(player));
+					return false;
+				}//termine la commande si le jeur n'as pas assez d'argent pour lancer le duel
 			target.sendMessage(player.getName()+" vous a envoillé une demande de duel avec une mise de "+mise+"$"
 					+ "\n vous pouvez l'accepter ou la refuser avec la commande /duel accept/decline");
 			Duel duel=new Duel(player, target, mise);
@@ -64,7 +66,7 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 				player.sendMessage("vous n'avez pas de duel a accepter");
 				return false;
 			}else if(duel.isWaitingAccept(player)) {
-				if(main.economy.bankBalance(player.getName()).amount<=duel.getMise()) {
+				if(main.economy.getBalance(player)<=duel.getMise()) {
 					player.sendMessage("vous n'avez pas assez d'argent pour accepter ce duel");
 					duel.getPlayers()[0].sendMessage("votre demande de duel a été annulé");
 					main.waitAccept.remove(duel);
@@ -76,6 +78,8 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 					return false;
 				}else {
 					main.duelIsReady(duel);
+					player.sendMessage("duel accpété");
+					main.actualizeDuels();
 					return false;
 				}
 			}
@@ -96,11 +100,11 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 				player.sendMessage("vous n'avez pas de duel en liste d'attente");
 				return false;
 			}else {
-				player.sendMessage("votre duel est actuellement en "+main.waitingList.indexOf(duel)+"e position");
+				player.sendMessage("votre duel est actuellement en "+(main.waitingList.indexOf(duel)+1)+"e position");
 				return true;
 			}
 		}else {
-			player.sendMessage(getDuelHelpMessage()+"a");
+			player.sendMessage(getDuelHelpMessage());
 			return true;
 		}
 		

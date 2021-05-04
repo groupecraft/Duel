@@ -56,8 +56,8 @@ public class DuelMain extends JavaPlugin {
 		for(int i =0; i<arenas.size();i++) {
 			arenas.get(i).forceEndDuel();
 		}
-		saveArenas();
 		saveDuelInventory();
+		saveArenas();
 		System.out.println("désactivation du système de duel");
 		super.onDisable();
 	}
@@ -127,12 +127,15 @@ public class DuelMain extends JavaPlugin {
 		}
 	}
 	public void actualizeDuels() {
+		
 		for(int i =0; i<arenas.size();i++) {
 			if(!arenas.get(i).hasDuel()) {
+				System.out.println("salut");
 				boolean done=false;
 				while(!(done||waitingList.size()==0)) {
 					done =arenas.get(i).startDuel(waitingList.get(0));
 					waitingList.remove(0);
+					//System.out.println(!(done||waitingList.size()==0));
 				}
 				
 			}
@@ -143,8 +146,9 @@ public class DuelMain extends JavaPlugin {
 			duel.ready();
 			waitAccept.remove(duel);
 			waitingList.add(duel);
-			actualizeDuels();
+			
 		}
+		actualizeDuels();
 	}
 	
 }
