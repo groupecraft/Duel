@@ -1,8 +1,11 @@
 package fr.groupecraft.duel;
 
 import java.io.File;
+import java.time.Clock;
 import java.util.ArrayList;
 
+import com.google.gson.reflect.TypeToken;
+import fr.groupecraft.duel.arena.ArenaSave;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -30,13 +33,13 @@ public class DuelMain extends JavaPlugin {
 	public ArrayList<Arena> arenas= new ArrayList<Arena>();
 	public Economy economy;
 	public boolean canStartDuel=true;
-	public FileGSON<ArrayList<Arena>> gsonArenas=new FileGSON<ArrayList<Arena>>(new File(getDataFolder(),"arenas.json"));
+	public FileGSON<ArrayList<ArenaSave>> gsonArenas=new FileGSON<ArrayList<ArenaSave>>(new File(getDataFolder(),"arenas.json"));
 	//public FileGSON<Inventory> gsonInventory=new FileGSON<Inventory>(new File(getDataFolder(),"inventory.json"));
 	public FilesUsing fUInventory=new FilesUsing(new File(getDataFolder(),"inventory.json"));
 	
 	@Override
 	public void onEnable() {
-		System.out.println("démarrage du système de duel");
+		System.out.println("Démarrage du système de duel.");
 		saveDefaultConfig();
 		setupEconomy();
 		loadArenas();
@@ -58,7 +61,7 @@ public class DuelMain extends JavaPlugin {
 		}
 		saveDuelInventory();
 		saveArenas();
-		System.out.println("désactivation du système de duel");
+		System.out.println("Désactivation du système de duel.");
 		super.onDisable();
 	}
 	
@@ -66,25 +69,43 @@ public class DuelMain extends JavaPlugin {
 		return instance;
 	}
 	private boolean setupEconomy(){
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			return false;
+		}
+		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+
+		if (rsp == null) {
+			return false;
+		}
+
+		economy = rsp.getProvider();
+		return economy != null;
+		/*
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
         }
 
-        return (economy != null);
+        return (economy != null);*/
     }
 	public void saveArenas() {
-		ArrayList<Arena> toSave= new ArrayList<Arena>();
+		ArrayList<ArenaSave> toSave= new ArrayList<ArenaSave>();
 		for(int i=0; i<arenas.size();i++) {
 			arenas.get(i).forceEndDuel();
-			toSave.add(new Arena(arenas.get(i)));
+			toSave.add(new ArenaSave(arenas.get(i)));
 		}
 		gsonArenas.serialize(toSave);
 	}
 	public void loadArenas() {
-		arenas=gsonArenas.deSerialize();
-		if(arenas==null) {
-			arenas=new ArrayList<Arena>();
+		ArrayList<ArenaSave> tempSave=gsonArenas.deSerialize(new TypeToken<ArrayList<ArenaSave>>(){});
+		if(tempSave==null||tempSave.isEmpty()) {
+			arenas = new ArrayList<Arena>();
+			return;
+		}
+		arenas = new ArrayList<Arena>();
+		for(ArenaSave temp: tempSave){
+			if (temp==null)continue;
+			arenas.add(new Arena(temp));
 		}
 	}
 	public void saveDuelInventory() {

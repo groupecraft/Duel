@@ -46,7 +46,7 @@ public class FileGSON<T> {
 		a.add(objJson);
 		fu.writeWOK(a);//écrit la notation json dans le ficher
 	}
-	public T deSerialize() {
+	public T deSerialize(TypeToken <T>typeToken) {
 		gson= createGsonInstanceArenas();
 		if(!fu.getFile().exists()) {
 			fu.create();
@@ -57,8 +57,7 @@ public class FileGSON<T> {
 			json+=content.get(i);
 		}//transforme l'arrayList en string
 		T var;
-		Type listType = new TypeToken<T>(){}.getType();
-		var=gson.fromJson(json,listType);
+		var=gson.fromJson(json,typeToken.getType());
 		return var;
 	}
 	public File getFile() {
