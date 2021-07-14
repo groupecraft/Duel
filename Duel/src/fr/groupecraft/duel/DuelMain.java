@@ -1,11 +1,13 @@
 package fr.groupecraft.duel;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Clock;
 import java.util.ArrayList;
 
 import com.google.gson.reflect.TypeToken;
 import fr.groupecraft.duel.arena.ArenaSave;
+import fr.groupecraft.duel.stats.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -39,11 +41,15 @@ public class DuelMain extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		if(!getDataFolder().exists()) {
+			try {getDataFolder().createNewFile();} catch (IOException e) {e.printStackTrace();}
+		}
 		System.out.println("Démarrage du système de duel.");
-		saveDefaultConfig();
+		//saveDefaultConfig();
 		setupEconomy();
 		loadArenas();
 		instance=this;
+		StatsManager.getInstance().load();
 		getServer().getPluginManager().registerEvents(new EventListener(), this);
 		getCommand("duel").setExecutor(new DuelCmd());
 		getCommand("arena").setExecutor(new ArenaCmd());
@@ -59,6 +65,7 @@ public class DuelMain extends JavaPlugin {
 		for(int i =0; i<arenas.size();i++) {
 			arenas.get(i).forceEndDuel();
 		}
+		StatsManager.getInstance().save();
 		saveDuelInventory();
 		saveArenas();
 		System.out.println("Désactivation du système de duel.");

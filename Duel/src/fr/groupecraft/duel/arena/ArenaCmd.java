@@ -2,6 +2,8 @@ package fr.groupecraft.duel.arena;
 
 import java.util.ArrayList;
 
+import fr.groupecraft.duel.stats.DuelPlayer;
+import fr.groupecraft.duel.stats.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -166,7 +168,49 @@ public class ArenaCmd implements CommandExecutor {
 		}else if(args[0].equalsIgnoreCase("actualizeDuels")){
 			main.actualizeDuels();
 			sender.sendMessage("§aDuel actualisé.");
-		}else{
+		}else if(args[0].equalsIgnoreCase("createStats")&&args.length==2){
+			Player trg =Bukkit.getPlayer(args[1]);
+			if(trg==null){
+				sender.sendMessage("§cCe joueur n'existe pas");
+				return false;
+			}
+			DuelPlayer stats =StatsManager.getInstance().getStats(trg);
+			if(stats==null){
+				StatsManager.getInstance().createStats(trg);
+				sender.sendMessage("§aProfil de statistique créé");
+				return true;
+			}else{
+				sender.sendMessage("§cCe joueur possède déjà un profil de statistiques");
+				return false;
+			}
+		}else if(args[0].equalsIgnoreCase("removeStats")&&args.length==2){
+            Player trg =Bukkit.getPlayer(args[1]);
+            if(trg==null){
+                sender.sendMessage("§cCe joueur n'existe pas");
+                return false;
+            }
+            DuelPlayer stats =StatsManager.getInstance().getStats(trg);
+            if(stats!=null){
+                StatsManager.getInstance().delStats(trg);
+                sender.sendMessage("§aProfil de de statistiques supprimée");
+                return true;
+            }else{
+                sender.sendMessage("§cCe joueur ne possède pas de profil de statistique");
+                return false;
+            }
+		}else if(args[0].equalsIgnoreCase("resetAllStats")){
+		    StatsManager.getInstance().resetAllstats();
+		    sender.sendMessage("§astatistiques réinitialisées");
+		    return true;
+		}else if(args[0].equalsIgnoreCase("saveStats")){
+		    StatsManager.getInstance().save();
+		    sender.sendMessage("§aStatistiques sauvegardées");
+		    return true;
+        }else if(args[0].equalsIgnoreCase("loadStats")){
+            StatsManager.getInstance().load();
+            sender.sendMessage("§aStatistiques chargées");
+            return true;
+        }else{
 			sender.sendMessage(getHelpMessage());
 		}
 		return false;
@@ -186,7 +230,12 @@ public class ArenaCmd implements CommandExecutor {
 		builder.append("§d/arena getWaitingList§R: pour voir tous les duels en liste d'attente.\n");
 		builder.append("§d/arena clear§r: pour supprimer toutes les arènes.\n");
 		builder.append("§d/arena forceEndDuel <arène>§R: pour arrêter un duel en cours.\n");
-		builder.append("§d/arena artualizeDuels§r: pour mettre un duel dans toutes les arènes qui n'en ont pas.");
+		builder.append("§d/arena artualizeDuels§r: pour mettre un duel dans toutes les arènes qui n'en ont pas.\n");
+		builder.append("§d/arena createStats <joueur>&r: pour créer un profil de statistiques à un joueur qui n'ent a pas\n");
+		builder.append("§d/arena removeStats <joueur>§r: pour supprimer un profil de statistiques d'un joueur\n");
+		builder.append("§d/arena resetAllStats&r: pour supprimer l'intégralité des statistiques de chaque joueur\n");
+		builder.append("§d/arena saveStats&r: pour sauvegarder les statistique de duel des joueur\n");
+		builder.append("§d/arena loadStats&r: pour charger la dernière sauvegarde des statistique de duel des joueur\n");
 		return builder.toString();
 	}
 

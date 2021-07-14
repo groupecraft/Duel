@@ -1,5 +1,8 @@
 package fr.groupecraft.duel.duels;
 
+import fr.groupecraft.duel.stats.DuelPlayer;
+import fr.groupecraft.duel.stats.StatsManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -154,6 +157,17 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 
 				}
 			}
+		}else if(args[0].equalsIgnoreCase("getStats")){
+			if(args.length==1){
+				sender.sendMessage(StatsManager.getInstance().getStatsMessage((Player)sender));
+				return true;
+			}
+			Player trg= Bukkit.getPlayer(args[1]);
+			if(trg==null){
+				sender.sendMessage("§cJoueur inconu");
+				return false;
+			}
+			sender.sendMessage(StatsManager.getInstance().getStatsMessage(trg));
 		}else {
 			player.sendMessage(getDuelHelpMessage());
 			return true;
@@ -166,7 +180,8 @@ public class DuelCmd implements org.bukkit.command.CommandExecutor {
 		message+="§d/duel accept/decline§R: pour accépter/refuser une demande de duel.\n";
 		message+="§d/duel getPosition§R: pour connaître la position de votre duel dans la file d'atente.\n";
 		message+="§d/duel cancel§R: pour annuler un duel en liste d'attente.\n";
-		message+="§d/duel giveUp§R: pour abandoner un duel en cours.";
+		message+="§d/duel giveUp§R: pour abandoner un duel en cours.\n";
+		message+="§d/duel getStats [joueur]&r: pour voir ses stats ou celle du joueur visé.";
 		return message;
 	}
 

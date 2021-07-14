@@ -1,5 +1,6 @@
 package fr.groupecraft.duel.arena;
 
+import fr.groupecraft.duel.stats.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -148,10 +149,14 @@ public class Arena {
 			Economy eco=DuelMain.getInstance().economy;
 			if(duel.getPlayers()[0]==winer){
 				eco.depositPlayer(duel.getPlayers()[0], 2*duel.getMise());
+				StatsManager.getInstance().win(duel.getPlayers()[0], duel.getMise());
+				StatsManager.getInstance().loose(duel.getPlayers()[1], duel.getMise());
 				duel.getPlayers()[0].sendMessage("Vous avez terrassé votre adversaire, vous gagnez donc §d"+duel.getMise()+"$§r!");
 				duel.getPlayers()[1].sendMessage("Vous avez été vaincu, vous perdez donc §d"+duel.getMise()+"$§r!");
 			}else {
 				eco.depositPlayer(duel.getPlayers()[1], 2*duel.getMise());
+				StatsManager.getInstance().win(duel.getPlayers()[1], duel.getMise());
+				StatsManager.getInstance().loose(duel.getPlayers()[0], duel.getMise());
 				duel.getPlayers()[1].sendMessage("Vous avez terrassé votre adversaire, vous gagnez donc §d"+duel.getMise()+"$§r!");
 				duel.getPlayers()[0].sendMessage("Vous avez été vaincu, vous perdez donc §d"+duel.getMise()+"$§r!");
 			}

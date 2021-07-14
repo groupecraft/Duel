@@ -1,18 +1,27 @@
 package fr.groupecraft.duel.stats;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class DuelPlayer {
 
     private int winsMoney,looses,totalBet,totalWin;
-    private Player player;
+    private UUID player;
 
     public DuelPlayer(Player player){
-        this.player=player;
+        this.player=player.getUniqueId();
     }
-
+    public DuelPlayer(DuelPlayer stats){
+        player=stats.player;
+        winsMoney= stats.winsMoney;
+        looses= stats.looses;
+        totalBet=stats.totalBet;
+        totalWin=stats.totalWin;
+    }
     public void changePlayer(Player player){
-        this.player=player;
+        this.player=player.getUniqueId();
     }
 
     public void win(int bet){
@@ -26,8 +35,9 @@ public class DuelPlayer {
     }
 
     public Player getPlayer(){
-        return player;
+        return Bukkit.getPlayer(player);
     }
+    public UUID getUUID(){return player;}
     public int getLooses() {
         return looses;
     }
@@ -43,7 +53,7 @@ public class DuelPlayer {
     public int getTotalWinMoney() {
         return totalWin-totalBet;
     }
-    public int getTotalLooseMoney(){
+    public int getLooseMoney(){
         return totalBet-totalWin;
     }
 }
